@@ -78,6 +78,7 @@ tool flags, and PDK/tool quirks. Intended to be periodically updated by a memory
 | fpga         | `lut_count`, `fmax_mhz`, `timing_met`                                |
 | hls          | `latency_cycles`, `dsp_count`, `ii_achieved`                         |
 | infrastructure | `tools_detected`, `tools_missing`, `wrappers_deployed`, `mcp_servers_configured`, `module_system`, `tool_versions` |
+| memory-ip    | `memory_instances`, `total_memory_area_um2`, `worst_access_time_ns`, `view_qa_errors`, `projected_repair_yield_pct` |
 | pd           | `wns_ns`, `drc_violations`, `lvs_errors`, `gds_area_um2`            |
 | rtl-design   | `lint_errors`, `cdc_violations`, `synth_check_pass`                  |
 | soc          | `ip_blocks_integrated`, `simulation_pass`, `memory_map_conflicts`    |
@@ -103,6 +104,7 @@ memory/
 ├── fpga/
 ├── hls/
 ├── infrastructure/             ← opt-in, environment-keyed (see note below)
+├── memory-ip/
 ├── pd/
 ├── rtl-design/
 ├── soc/
@@ -127,7 +129,7 @@ transfer across hosts.
 ## Design State
 
 `design_state.json` is a cross-orchestrator shared file written to the working directory.
-It persists spec, interfaces, constraints, and per-domain outputs across all 15 orchestrator
+It persists spec, interfaces, constraints, and per-domain outputs across all 16 orchestrator
 boundaries. Every orchestrator reads it at session start (after `knowledge.md`) and performs
 an atomic read-modify-write at session end (alongside `experiences.jsonl`).
 

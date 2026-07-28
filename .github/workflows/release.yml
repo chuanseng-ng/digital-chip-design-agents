@@ -88,14 +88,14 @@ jobs:
           \`\`\`
 
           ### Contents
-          - **${SKILLS}** skill files across 13 chip design domains
+          - **${SKILLS}** skill files across 14 chip design domains
           - **${AGENTS}** orchestrator agent definitions
           - Full CI validation on every PR
 
           ### Domains
           Architecture · RTL Design · Functional Verification · Formal Verification ·
           Logic Synthesis · DFT · STA · HLS · Physical Design · SoC Integration ·
-          Compiler Toolchain · Embedded Firmware · FPGA Emulation
+          Memory IP Design · Compiler Toolchain · Embedded Firmware · FPGA Emulation
 
           ### Other IDE Support
           The same domain knowledge is available for non-Claude IDEs via the install script:

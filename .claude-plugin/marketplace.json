@@ -5,8 +5,8 @@
     "github": "chuanseng-ng"
   },
   "metadata": {
-    "description": "Full digital chip design pipeline — 15 plugins across 14 domains, from infrastructure setup through tape-out and firmware, with closed-loop verification↔RTL feedback.",
-    "version": "1.3.0"
+    "description": "Full digital chip design pipeline — 16 plugins across 15 domains, from infrastructure setup through tape-out and firmware, with closed-loop verification↔RTL feedback.",
+    "version": "1.4.0"
   },
   "plugins": [
     {
@@ -88,6 +88,14 @@
       "strict": true,
       "skills": ["./skills/soc-integration"],
       "agents": ["./agents/soc-integration-orchestrator.md"]
+    },
+    {
+      "name": "chip-design-memory-ip",
+      "description": "Memory IP design — SRAM/register-file/ROM macro selection, array architecture, redundancy and repair, view generation and QA",
+      "source": "./plugins/memory-ip",
+      "strict": true,
+      "skills": ["./skills/memory-ip-design"],
+      "agents": ["./agents/memory-ip-orchestrator.md"]
     },
     {
       "name": "chip-design-compiler",

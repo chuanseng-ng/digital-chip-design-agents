@@ -58,6 +58,7 @@ VALID_DOMAINS = [
     "formal",
     "fpga",
     "hls",
+    "memory-ip",
     "pd",
     "rtl-design",
     "soc",
@@ -80,6 +81,7 @@ NUMERIC_METRICS: dict[str, list[str]] = {
     "formal": ["proved", "failed", "unknown"],
     "fpga": ["lut_count", "fmax_mhz"],
     "hls": ["latency_cycles", "dsp_count"],
+    "memory-ip": ["memory_instances", "total_memory_area_um2", "worst_access_time_ns", "view_qa_errors", "projected_repair_yield_pct"],
     "pd": ["wns_ns", "drc_violations", "lvs_errors", "gds_area_um2"],
     "rtl-design": ["lint_errors", "cdc_violations"],
     "soc": ["ip_blocks_integrated", "memory_map_conflicts"],
@@ -96,7 +98,7 @@ HIGHER_IS_BETTER = {
     "scan_coverage_pct", "atpg_fault_coverage_pct", "bsp_tests_passed",
     "proved", "ip_blocks_integrated", "functional_coverage_pct",
     "ii_achieved", "timing_met", "abi_compliant", "simulation_pass",
-    "synth_check_pass", "build_pass",
+    "synth_check_pass", "build_pass", "projected_repair_yield_pct",
     # Timing slack: 0 = clean, negative = violation; closer to 0 is better
     "wns_ns", "setup_wns_ns", "hold_wns_ns", "tns_ns",
 }

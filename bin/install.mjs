@@ -315,6 +315,7 @@ const OPENCODE_MODE_DISPLAY = {
   hls: ["chip-hls", "High-Level Synthesis"],
   pd: ["chip-pd", "Physical Design"],
   soc: ["chip-soc", "SoC IP Integration"],
+  "memory-ip": ["chip-memory-ip", "Memory IP Design"],
   compiler: ["chip-compiler", "Compiler Toolchain"],
   firmware: ["chip-firmware", "Embedded Firmware"],
   fpga: ["chip-fpga", "FPGA Emulation"],

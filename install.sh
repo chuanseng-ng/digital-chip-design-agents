@@ -114,6 +114,7 @@ PLUGINS=(
   "chip-design-hls"
   "chip-design-pd"
   "chip-design-soc"
+  "chip-design-memory-ip"
   "chip-design-compiler"
   "chip-design-firmware"
   "chip-design-fpga"
@@ -133,6 +134,7 @@ declare -A PLUGIN_DIRS=(
   ["chip-design-hls"]="hls"
   ["chip-design-pd"]="pd"
   ["chip-design-soc"]="soc"
+  ["chip-design-memory-ip"]="memory-ip"
   ["chip-design-compiler"]="compiler"
   ["chip-design-firmware"]="firmware"
   ["chip-design-fpga"]="fpga"
@@ -258,7 +260,7 @@ plugins = [
   "chip-design-sta",          "chip-design-hls",       "chip-design-pd",
   "chip-design-soc",          "chip-design-compiler",  "chip-design-firmware",
   "chip-design-fpga",         "chip-design-infrastructure",
-  "chip-design-meta",
+  "chip-design-memory-ip",    "chip-design-meta",
 ]
 
 cfg = {}
@@ -290,7 +292,7 @@ PYEOF
     echo "  [skip] could not seed memory root; run memory_root.py --init manually."
 
   echo ""
-  echo "Done! Restart Claude Code to activate all 15 plugins."
+  echo "Done! Restart Claude Code to activate all 16 plugins."
 
 fi  # end Claude Code block
 
@@ -435,6 +437,7 @@ mode_display = {
     'hls':          ('chip-hls',          'High-Level Synthesis'),
     'pd':           ('chip-pd',           'Physical Design'),
     'soc':          ('chip-soc',          'SoC IP Integration'),
+    'memory-ip':    ('chip-memory-ip',    'Memory IP Design'),
     'compiler':     ('chip-compiler',     'Compiler Toolchain'),
     'firmware':     ('chip-firmware',     'Embedded Firmware'),
     'fpga':         ('chip-fpga',         'FPGA Emulation'),

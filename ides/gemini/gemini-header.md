@@ -1,4 +1,4 @@
-You are assisting with digital ASIC/FPGA chip design work across 13 domains.
+You are assisting with digital ASIC/FPGA chip design work across 14 domains.
 Domain-specific knowledge — stage sequences, rules, QoR metrics, and output
 requirements — is loaded below via @-imports from the plugin source files.
 
@@ -14,4 +14,4 @@ requirements — is loaded below via @-imports from the plugin source files.
 
 architecture · rtl-design · verification · formal · synthesis ·
 dft · sta · hls · physical-design · soc-integration ·
-compiler-toolchain · embedded-firmware · fpga-emulation
+memory-ip-design · compiler-toolchain · embedded-firmware · fpga-emulation

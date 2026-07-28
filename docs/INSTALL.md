@@ -55,7 +55,7 @@ cd digital-chip-design-agents
 .\install.ps1
 ```
 
-Restart Claude Code after running — all 16 skills and 15 agents will be active.
+Restart Claude Code after running — all 17 skills and 16 agents will be active.
 
 ## Option C — Marketplace (selective install)
 
@@ -80,6 +80,7 @@ marketplace. First register the marketplace, then install the domains you need:
 /plugin install chip-design-hls@digital-chip-design-agents
 /plugin install chip-design-pd@digital-chip-design-agents
 /plugin install chip-design-soc@digital-chip-design-agents
+/plugin install chip-design-memory-ip@digital-chip-design-agents
 /plugin install chip-design-compiler@digital-chip-design-agents
 /plugin install chip-design-firmware@digital-chip-design-agents
 /plugin install chip-design-fpga@digital-chip-design-agents

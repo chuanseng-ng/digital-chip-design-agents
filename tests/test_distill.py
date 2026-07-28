@@ -12,8 +12,8 @@ DISTILL = Path(__file__).resolve().parents[1] / \
 
 
 def test_every_valid_domain_has_metric_fields(distill):
-    # The 13 design domains + infrastructure must each be registered.
-    assert len(distill.VALID_DOMAINS) == 14
+    # The 14 design domains + infrastructure must each be registered.
+    assert len(distill.VALID_DOMAINS) == 15
     for dom in distill.VALID_DOMAINS:
         assert dom in distill.METRIC_FIELDS, f"{dom} missing from METRIC_FIELDS"
     assert "infrastructure" in distill.VALID_DOMAINS

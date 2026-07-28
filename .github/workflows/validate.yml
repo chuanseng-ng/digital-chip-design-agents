@@ -135,8 +135,8 @@ jobs:
           # Agents and marketplace entries must be 1:1 (one orchestrator per plugin).
           # Skills may exceed plugins — a plugin can register more than one skill file
           # (e.g. chip-design-infrastructure registers both 'infrastructure' and 'memory-keeper').
-          assert agent_count == mp_count == 15, \
-              f"Count mismatch — expected 15 agents and 15 marketplace entries: agents={agent_count}, marketplace={mp_count}"
+          assert agent_count == mp_count == 16, \
+              f"Count mismatch — expected 16 agents and 16 marketplace entries: agents={agent_count}, marketplace={mp_count}"
           assert skill_count >= mp_count, \
               f"Fewer skills than plugins — each plugin must have at least one skill: skills={skill_count}, plugins={mp_count}"
           print("Count check PASSED")
@@ -198,14 +198,14 @@ jobs:
 
           errors = []
 
-          # applyto-map.json must have all 14 domains
+          # applyto-map.json must have all 16 domains
           applyto_path = "ides/copilot/applyto-map.json"
           if not os.path.isfile(applyto_path):
               errors.append(f"Missing: {applyto_path}")
           else:
               applyto = json.load(open(applyto_path))
-              if len(applyto) != 15:
-                  errors.append(f"{applyto_path}: expected 15 domains, got {len(applyto)}")
+              if len(applyto) != 16:
+                  errors.append(f"{applyto_path}: expected 16 domains, got {len(applyto)}")
               else:
                   print(f"OK: {applyto_path} — {len(applyto)} domains")
 

@@ -280,8 +280,13 @@ approval is required).
 
 ## 12. New Adjacent Agent Domains
 
-The following domains are adjacent to the current 14-plugin pipeline and are not yet covered.
+The following domains are adjacent to the current 16-plugin pipeline and are not yet covered.
 Each represents a distinct discipline with its own toolchain and sign-off criteria.
+
+> **Implemented:** *Memory IP Design* was previously an unlisted gap and shipped as
+> `chip-design-memory-ip` (16th plugin). It owns memory macro selection, array
+> architecture, redundancy/repair, and view QA, deferring MBIST insertion to DFT,
+> floorplanning to PD, and timing sign-off to STA.
 
 | Domain | Rationale | Key tools |
 |--------|-----------|-----------|
