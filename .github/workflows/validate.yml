@@ -199,11 +199,13 @@ jobs:
           errors = []
 
           # applyto-map.json must cover exactly the domains that exist under plugins/.
-          # bin/install.mjs falls back to "**/*" for any domain missing here, so a
-          # mistyped or stale key silently mis-scopes Copilot instructions. Derive the
-          # expected key set from the plugin directories rather than hardcoding a count.
+          # bin/install.mjs builds Copilot instructions by iterating listSkills() and
+          # looking up applyMap[domain], falling back to "**/*" for any domain missing
+          # here — so a mistyped or stale key silently mis-scopes instructions to every
+          # file. Derive the expected key set from the same source the installer uses
+          # (the skill inventory) rather than hardcoding a count.
           import glob
-          expected_domains = {p.split(os.sep)[1] for p in glob.glob("plugins/*/agents/*.md")}
+          expected_domains = {p.split(os.sep)[1] for p in glob.glob("plugins/*/skills/*/SKILL.md")}
           applyto_path = "ides/copilot/applyto-map.json"
           if not os.path.isfile(applyto_path):
               errors.append(f"Missing: {applyto_path}")

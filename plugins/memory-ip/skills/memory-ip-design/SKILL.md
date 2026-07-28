@@ -87,10 +87,25 @@ for STA, behavioural models for verification.
 
 ### Domain Rules
 1. Capture depth × width × port count for every memory instance in the design; source from `design_state.architecture` and `design_state.rtl` where available
-2. Preserve the memory type and port requirements declared by `design_state.architecture` / `design_state.rtl` — that declaration wins. Only when the type is unspecified, infer it, and infer from the whole picture rather than depth alone: port count and concurrency (multi-port and bypass-heavy structures are register files regardless of depth), access latency budget, and what the target PDK actually offers. Depth is a weak tiebreaker (~256 words) and misclassifies both shallow SRAMs and deep register files, so record the inferred type as an assumption to confirm, not a fact
+2. Establish memory type and port requirements by this precedence, and record which source supplied each instance:
+   1. **`design_state.rtl`** — the implementation is authoritative for port count, widths, and depth, because that is what must actually be instantiated
+   2. **`design_state.architecture`** — authoritative for type intent and sizing where RTL is silent (typically pre-RTL runs)
+   3. **Inference** — only when both are silent. Infer from the whole picture, not depth alone: port count and concurrency (multi-port and bypass-heavy structures are register files regardless of depth), access-latency budget, and what the target PDK actually offers. Depth is a weak tiebreaker (~256 words) that misclassifies both shallow SRAMs and deep register files, so record any inferred type as an assumption to confirm, not a fact
+
+   **On conflict, do not silently pick a winner.** If `rtl` and `architecture` disagree on type, port arrangement, depth, or width for the same instance, halt with a `constraint_gap` escalation naming the instance and both values. A mismatch here selects the wrong macro interface and is not recoverable after `view_generation`
 3. Compute required read/write bandwidth per instance and check it against the target `constraints.clock.clk_mhz` — bandwidth shortfalls must be resolved here, not by over-selecting macros later
-4. Decide ECC need from the soft-error budget and total array bit count. The input is `constraints.memory_ip.fit_target_fit_per_mb` (FIT per Mb, default 100); multiply by the instance's Mb to get its budgeted FIT and compare against the PDK's raw SER rate for the chosen bitcell. Parity where detect-only suffices, SECDED for correct-single/detect-double. `constraints.memory_ip.ecc_required: true` forces a scheme regardless of the calculation. Record the FIT number, its source, and the resulting decision per instance — an unaudited ECC choice is not reproducible on a re-spin
-5. Enumerate required power modes per instance — active, light sleep (periphery off, array retained), deep sleep (retained at reduced voltage), shutdown (contents lost) — and record which must retain data
+4. Decide the ECC scheme per instance with this deterministic policy, so two runs on the same inputs resolve identically. Compute `budgeted_FIT = fit_target_fit_per_mb × instance_Mb` (`constraints.memory_ip.fit_target_fit_per_mb`, default 100) and `raw_FIT` from the PDK's SER rate for the chosen bitcell:
+
+   | Condition | Resolved scheme |
+   |---|---|
+   | `ecc_required: true` | **SECDED** — the forced floor is correction, not merely "a scheme". Parity only if the spec explicitly permits detect-only, recorded with rationale |
+   | `raw_FIT ≤ budgeted_FIT` | `none` |
+   | `raw_FIT > budgeted_FIT`, detect-and-retry available at system level | `parity` |
+   | `raw_FIT > budgeted_FIT`, no system-level retry | **SECDED** |
+   | `raw_FIT > budgeted_FIT` even with SECDED + scrubbing | escalate — ECC alone cannot meet the budget; revisit bitcell or partitioning |
+
+   Record `raw_FIT`, `budgeted_FIT`, the PDK SER source, and the resolved scheme per instance into `memory_ip.ecc`. An unaudited ECC choice is not reproducible on a re-spin
+5. Enumerate required power modes per instance — active, light sleep (periphery off, array retained), deep sleep (retained at reduced voltage), shutdown (contents lost) — and resolve retention with an explicit precedence: **a per-instance retention requirement from the spec/architecture always wins**; `constraints.memory_ip.retention_required` is the *default* applied only to instances that state nothing. The global flag never overrides an explicit per-instance value in either direction — forcing retention onto an instance declared non-retained over-constrains macro selection and costs area, while dropping it from one declared retained is a functional bug. Where the global is `true` and an instance is explicitly non-retained, record the resolved value and the rationale rather than silently reconciling. Write the resolved per-instance value into `memory_ip.power_modes`
 6. Record the dual-rail requirement: whether array and periphery supplies are separate, since this constrains both the macro choice and the UPF power intent
 7. Flag any instance needing multi-port behaviour and whether it can be met by banking instead of a true multi-port bitcell (much larger)
 
@@ -260,10 +275,10 @@ See `plugins/meta/skills/pipeline-orchestration/SKILL.md` §Constraints Schema f
 **Optional (schema defaults apply when absent):**
 - `constraints.memory_ip.vmin_margin_mv` (default: 50) — minimum Vmin margin
 - `constraints.memory_ip.repair_yield_pct_min` (default: 99) — projected post-repair yield floor
-- `constraints.memory_ip.ecc_required` (default: false) — forces an ECC scheme regardless of FIT calculation
-- `constraints.memory_ip.fit_target_fit_per_mb` (default: 100) — soft-error budget in FIT per Mb; the audited input to the parity-vs-SECDED decision at `memory_requirements`
+- `constraints.memory_ip.ecc_required` (default: false) — when `true`, forces **SECDED** as the floor regardless of the FIT calculation (see the `memory_requirements` ECC policy table)
+- `constraints.memory_ip.fit_target_fit_per_mb` (default: 100) — soft-error budget in FIT per Mb; the audited input to the ECC decision at `memory_requirements`
 - `constraints.memory_ip.max_aspect_ratio` (default: 4.0) — macro aspect-ratio ceiling
-- `constraints.memory_ip.retention_required` (default: true) — deep-sleep retention mandatory; when absent the default is assumed and must be stated in the stage `reason`, since dropping retention silently changes macro choice
+- `constraints.memory_ip.retention_required` (default: true) — the **default** applied only to instances with no explicit per-instance retention requirement; an explicit per-instance value always wins in both directions. When the constraint is absent the default is assumed and must be stated in the stage `reason`
 - `constraints.pvt_corners` — corner list that `view_generation` must fully characterise. **Not defaultable:** if absent, or if no entry has non-null `voltage_v` and `temp_c`, escalate as a `constraint_gap` at `view_generation` entry rather than characterising at typical only
 - `constraints.dft.mbist_coverage_pct` — **owned by `chip-design-dft`**; read only, never redefined here
 

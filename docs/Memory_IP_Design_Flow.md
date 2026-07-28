@@ -121,10 +121,15 @@ This is the orientation summary.
 |---|---|---|
 | `memory_ip.vmin_margin_mv` | 50 | Minimum Vmin margin |
 | `memory_ip.repair_yield_pct_min` | 99 | Projected post-repair yield floor |
-| `memory_ip.ecc_required` | false | Force ECC regardless of FIT calculation |
-| `memory_ip.fit_target_fit_per_mb` | 100 | Soft-error budget (FIT per Mb) — the audited input to parity-vs-SECDED |
+| `memory_ip.ecc_required` | false | When true, forces **SECDED** as the floor regardless of the FIT calculation |
+| `memory_ip.fit_target_fit_per_mb` | 100 | Soft-error budget (FIT per Mb) — the audited input to the ECC decision table |
 | `memory_ip.max_aspect_ratio` | 4.0 | Macro aspect-ratio ceiling |
-| `memory_ip.retention_required` | true | Deep-sleep retention mandatory |
+| `memory_ip.retention_required` | true | **Default only** — applies to instances with no explicit per-instance retention requirement; an explicit per-instance value always wins |
+
+Two precedence rules are enforced at `memory_requirements`: `design_state.rtl`
+outranks `design_state.architecture` for port/width/depth, and a conflict between
+them escalates a `constraint_gap` rather than being silently resolved; and the ECC
+scheme is chosen by a deterministic table keyed on `raw_FIT` vs. `budgeted_FIT`.
 
 `constraints.pvt_corners` is **not defaultable** — if absent or lacking non-null
 `voltage_v`/`temp_c`, `view_generation` escalates a `constraint_gap` rather than
