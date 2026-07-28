@@ -55,6 +55,16 @@ When invoking open-source tools, follow the execution hierarchy:
 - all_corners_characterized: true
 - redundancy_allocated: true
 - mbist_ports_exposed: true
+- worst_access_time_margin_ns: > 0 at the slow corner, every instance
+- projected_repair_yield_pct: >= `constraints.memory_ip.repair_yield_pct_min`
+- vmin_margin_mv: >= `constraints.memory_ip.vmin_margin_mv`
+- placement_constraints_complete: true
+
+These are the machine-checkable gates. The full human checklist — area and
+bandwidth budgets, ECC read-path latency, repair-register handoff,
+collision-policy consistency, `set_dont_touch` — is the `memory_signoff`
+Sign-off Checklist in the skill, and every item must be evidenced there before
+`memory_ip.signoff=true` is written.
 
 ## Stage Agent Output Format
 Each stage must return:
@@ -81,7 +91,7 @@ Each stage must return:
 6. When closing a claimed `fix_request`: set `status=fixed`, populate `memory_ip_response` (diff_summary, files_changed, fixed_at), append an entry to that fix_request's `history[]`. Use `constraint_ref=<fix_request.id>` in the top-level `history[]` entry. Do not modify any `fix_requests[]` entry not set to `claimed` by this run.
 7. Per-stage trace: after each stage completes (PASS, FAIL, or WARN), atomically append one `history[]` entry to `design_state.json` using the stage's output `confidence`, `failure_class`, `retry_strategy`, and `suggested_next_step`. Use the 10-field schema shown in the Design State section below. Derive `retry_strategy` from `failure_class` via the mapping in the pipeline-orchestration skill (Failure Classification & Retry Strategy); `failure_class: none` ⇒ `retry_strategy: none`. Every FAIL/WARN entry must carry a non-`none` `failure_class` and its mapped `retry_strategy`; the checkpoint-gate and constraint-validation history entries below also include `retry_strategy` (`none` for `await_approval`/checkpoint; `escalate` for constraint_gap). When escalating, `pending_approval.reason` must state the `failure_class` plus what the user must supply to unblock. The last entry written is the terminal entry read by downstream orchestrators.
 8. Checkpoint gate (at `memory_signoff` only, **unless** a `fix_request.id` was passed in the prompt — skip the gate in fix-request-servicing mode): before setting `memory_ip.signoff=true`, read `pipeline_config.checkpoints` and `approved_checkpoints` from `design_state.json`. If `"memory_signoff"` is in `checkpoints` and not in `approved_checkpoints[].stage`: (a) atomic RMW — set `pending_approval = { "type": "checkpoint", "stage": "memory_signoff", "agent": "memory-ip-orchestrator", "reason": "checkpoint memory_signoff requires human approval before proceeding", "fix_request_id": null, "last_summary": "<QoR one-liner: instance count, total area, worst access time, view QA errors>", "requires_user": true }`, (b) append a `history[]` entry with `decision: "await_approval"`, `confidence: "high"`, `failure_class: "none"`, `suggested_next_step: "escalate"`, (c) print the gate message, (d) halt without setting `memory_ip.signoff=true`. On re-invocation: if `"memory_signoff"` is now in `approved_checkpoints[].stage`, clear `pending_approval` (set null) and proceed.
-9. Constraint validation (at `memory_requirements`, skip in fix-request-servicing mode): read `design_state.constraints`. Required: `clock.clk_mhz`. If missing or `null`, perform atomic RMW — set `pending_approval = { "type": "constraint_gap", "stage": "memory_requirements", "agent": "memory-ip-orchestrator", "reason": "required constraint clock.clk_mhz missing from design_state.constraints", "fix_request_id": null, "last_summary": "clock.clk_mhz", "requires_user": true }`, append a `history[]` entry with `decision: "escalate"`, `failure_class: "spec_gap"`, `suggested_next_step: "escalate"`, `constraint_ref: "clock.clk_mhz"`, and halt. For optional absent constraints (Vmin margin, repair yield target, ECC requirement, aspect-ratio limit), use schema defaults and include a fallback note in the stage `reason`. Tag `constraint_ref` in history entries when evaluating QoR against a constraint (e.g. `"memory_ip.repair_yield_pct_min"` at `redundancy_repair`).
+9. Constraint validation (at `memory_requirements`, skip in fix-request-servicing mode): read `design_state.constraints`. Required: `clock.clk_mhz`. If missing or `null`, perform atomic RMW — set `pending_approval = { "type": "constraint_gap", "stage": "memory_requirements", "agent": "memory-ip-orchestrator", "reason": "required constraint clock.clk_mhz missing from design_state.constraints", "fix_request_id": null, "last_summary": "clock.clk_mhz", "requires_user": true }`, append a `history[]` entry with `decision: "escalate"`, `failure_class: "spec_gap"`, `suggested_next_step: "escalate"`, `constraint_ref: "clock.clk_mhz"`, and halt. For optional absent constraints (`vmin_margin_mv`, `repair_yield_pct_min`, `ecc_required`, `max_aspect_ratio`, `retention_required`, `fit_target_fit_per_mb`), use schema defaults and include a fallback note in the stage `reason`. Two need explicit handling beyond a default: (a) if `constraints.pvt_corners` is absent or contains no entry with non-null `voltage_v` and `temp_c`, `view_generation` cannot establish required corner coverage — treat this as a `constraint_gap` escalation at `view_generation` entry rather than characterising at typical only; (b) if `retention_required` is absent, default to `true` and state in the stage `reason` that retention was assumed mandatory, since silently dropping retention changes the macro choice and is not recoverable downstream. Tag `constraint_ref` in history entries when evaluating QoR against a constraint (e.g. `"memory_ip.repair_yield_pct_min"` at `redundancy_repair`).
 
 ## Memory
 
@@ -172,7 +182,7 @@ Domain fields to merge:
       }
     ],
     "total_area_um2": null,
-    "views": { "lib": [], "lef": [], "verilog": [], "gds": [] },
+    "views": { "lib": [], "lef": [], "db": [], "verilog": [], "gds": [], "cdl": [] },
     "repair": {
       "scheme": "row | column | both | none",
       "spare_rows": 0,

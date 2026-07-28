@@ -198,7 +198,12 @@ jobs:
 
           errors = []
 
-          # applyto-map.json must have all 16 domains
+          # applyto-map.json must cover exactly the domains that exist under plugins/.
+          # bin/install.mjs falls back to "**/*" for any domain missing here, so a
+          # mistyped or stale key silently mis-scopes Copilot instructions. Derive the
+          # expected key set from the plugin directories rather than hardcoding a count.
+          import glob
+          expected_domains = {p.split(os.sep)[1] for p in glob.glob("plugins/*/agents/*.md")}
           applyto_path = "ides/copilot/applyto-map.json"
           if not os.path.isfile(applyto_path):
               errors.append(f"Missing: {applyto_path}")
@@ -206,8 +211,14 @@ jobs:
               applyto = json.load(open(applyto_path))
               if len(applyto) != 16:
                   errors.append(f"{applyto_path}: expected 16 domains, got {len(applyto)}")
-              else:
-                  print(f"OK: {applyto_path} — {len(applyto)} domains")
+              missing = sorted(expected_domains - set(applyto))
+              unexpected = sorted(set(applyto) - expected_domains)
+              if missing:
+                  errors.append(f"{applyto_path}: missing domain key(s): {missing}")
+              if unexpected:
+                  errors.append(f"{applyto_path}: unknown domain key(s): {unexpected}")
+              if not missing and not unexpected and len(applyto) == 16:
+                  print(f"OK: {applyto_path} — {len(applyto)} domains, keys match plugins/")
 
           # copilot-instructions.md must exist
           cpi_path = "ides/copilot/.github/copilot-instructions.md"

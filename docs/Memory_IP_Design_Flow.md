@@ -45,7 +45,7 @@ Written into `design_state.json` under the `memory_ip` key:
         "ports": "1rw | 1r1w | 2rw", "macro": "", "banks": 0 }
     ],
     "total_area_um2": null,
-    "views": { "lib": [], "lef": [], "verilog": [], "gds": [] },
+    "views": { "lib": [], "lef": [], "db": [], "verilog": [], "gds": [], "cdl": [] },
     "repair": { "scheme": "row | column | both | none", "spare_rows": 0,
                 "spare_cols": 0, "repair_reg_bits": 0, "efuse_map": null },
     "placement_constraints": [
@@ -62,7 +62,7 @@ Written into `design_state.json` under the `memory_ip` key:
 
 ## Stage Sequence & Loop-Back Logic
 
-```
+```text
 memory_requirements → macro_selection → array_architecture → redundancy_repair →
 view_generation → integration_prep → memory_signoff
 ```
@@ -77,11 +77,19 @@ view_generation → integration_prep → memory_signoff
 | `integration_prep` | placement/channel infeasible | `array_architecture` | 2× |
 | `memory_signoff` | Vmin margin short | `array_architecture` | 1× |
 
-### Sign-off criteria
+### Sign-off criteria (machine-checkable gates)
 - `view_qa_errors: 0`
 - `all_corners_characterized: true`
 - `redundancy_allocated: true`
 - `mbist_ports_exposed: true`
+- `worst_access_time_margin_ns: > 0` at the slow corner, every instance
+- `projected_repair_yield_pct >= constraints.memory_ip.repair_yield_pct_min`
+- `vmin_margin_mv >= constraints.memory_ip.vmin_margin_mv`
+- `placement_constraints_complete: true`
+
+The full human checklist (area/bandwidth budgets, ECC read-path latency,
+repair-register handoff, collision-policy consistency, `set_dont_touch`) is the
+`memory_signoff` stage checklist in the SKILL file.
 
 ---
 
@@ -114,8 +122,13 @@ This is the orientation summary.
 | `memory_ip.vmin_margin_mv` | 50 | Minimum Vmin margin |
 | `memory_ip.repair_yield_pct_min` | 99 | Projected post-repair yield floor |
 | `memory_ip.ecc_required` | false | Force ECC regardless of FIT calculation |
+| `memory_ip.fit_target_fit_per_mb` | 100 | Soft-error budget (FIT per Mb) — the audited input to parity-vs-SECDED |
 | `memory_ip.max_aspect_ratio` | 4.0 | Macro aspect-ratio ceiling |
 | `memory_ip.retention_required` | true | Deep-sleep retention mandatory |
+
+`constraints.pvt_corners` is **not defaultable** — if absent or lacking non-null
+`voltage_v`/`temp_c`, `view_generation` escalates a `constraint_gap` rather than
+characterising at typical only.
 
 `constraints.dft.mbist_coverage_pct` is read-only here — owned by `chip-design-dft`.
 

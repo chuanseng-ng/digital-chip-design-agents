@@ -25,7 +25,7 @@
                ┌──────────────────────────┼──────────────────────────┐
                ▼                          ▼                          ▼
     ┌──────────────────┐      ┌───────────────────┐      ┌──────────────────────┐
-    │ 2. RTL DESIGN    │      │ 3. HLS FLOW        │      │ 7. FPGA EMULATION    │
+    │ 2. RTL DESIGN    │      │ 3. HLS FLOW        │      │ 14. FPGA EMULATION   │
     │ SV coding, lint, │      │ C/C++ → RTL        │      │ Early SW bring-up    │
     │ CDC, synth check │      │ (for algo blocks)  │      │ (runs in parallel)   │
     └────────┬─────────┘      └─────────┬──────────┘      └──────────────────────┘

@@ -87,9 +87,9 @@ for STA, behavioural models for verification.
 
 ### Domain Rules
 1. Capture depth × width × port count for every memory instance in the design; source from `design_state.architecture` and `design_state.rtl` where available
-2. Classify each instance by depth: register file below ~256 words, SRAM above; ROM where contents are fixed at tape-out
+2. Preserve the memory type and port requirements declared by `design_state.architecture` / `design_state.rtl` — that declaration wins. Only when the type is unspecified, infer it, and infer from the whole picture rather than depth alone: port count and concurrency (multi-port and bypass-heavy structures are register files regardless of depth), access latency budget, and what the target PDK actually offers. Depth is a weak tiebreaker (~256 words) and misclassifies both shallow SRAMs and deep register files, so record the inferred type as an assumption to confirm, not a fact
 3. Compute required read/write bandwidth per instance and check it against the target `constraints.clock.clk_mhz` — bandwidth shortfalls must be resolved here, not by over-selecting macros later
-4. Decide ECC need from the FIT-rate target and total array bit count: parity for detect-only, SECDED for correct-single/detect-double. Arrays above ~1 Mb in a reliability-critical path normally require SECDED
+4. Decide ECC need from the soft-error budget and total array bit count. The input is `constraints.memory_ip.fit_target_fit_per_mb` (FIT per Mb, default 100); multiply by the instance's Mb to get its budgeted FIT and compare against the PDK's raw SER rate for the chosen bitcell. Parity where detect-only suffices, SECDED for correct-single/detect-double. `constraints.memory_ip.ecc_required: true` forces a scheme regardless of the calculation. Record the FIT number, its source, and the resulting decision per instance — an unaudited ECC choice is not reproducible on a re-spin
 5. Enumerate required power modes per instance — active, light sleep (periphery off, array retained), deep sleep (retained at reduced voltage), shutdown (contents lost) — and record which must retain data
 6. Record the dual-rail requirement: whether array and periphery supplies are separate, since this constrains both the macro choice and the UPF power intent
 7. Flag any instance needing multi-port behaviour and whether it can be met by banking instead of a true multi-port bitcell (much larger)
@@ -261,9 +261,10 @@ See `plugins/meta/skills/pipeline-orchestration/SKILL.md` §Constraints Schema f
 - `constraints.memory_ip.vmin_margin_mv` (default: 50) — minimum Vmin margin
 - `constraints.memory_ip.repair_yield_pct_min` (default: 99) — projected post-repair yield floor
 - `constraints.memory_ip.ecc_required` (default: false) — forces an ECC scheme regardless of FIT calculation
+- `constraints.memory_ip.fit_target_fit_per_mb` (default: 100) — soft-error budget in FIT per Mb; the audited input to the parity-vs-SECDED decision at `memory_requirements`
 - `constraints.memory_ip.max_aspect_ratio` (default: 4.0) — macro aspect-ratio ceiling
-- `constraints.memory_ip.retention_required` (default: true) — whether deep-sleep retention is mandatory
-- `constraints.pvt_corners` — corner list that `view_generation` must fully characterise
+- `constraints.memory_ip.retention_required` (default: true) — deep-sleep retention mandatory; when absent the default is assumed and must be stated in the stage `reason`, since dropping retention silently changes macro choice
+- `constraints.pvt_corners` — corner list that `view_generation` must fully characterise. **Not defaultable:** if absent, or if no entry has non-null `voltage_v` and `temp_c`, escalate as a `constraint_gap` at `view_generation` entry rather than characterising at typical only
 - `constraints.dft.mbist_coverage_pct` — **owned by `chip-design-dft`**; read only, never redefined here
 
 ---

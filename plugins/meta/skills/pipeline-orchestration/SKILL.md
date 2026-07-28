@@ -209,6 +209,7 @@ their default fallbacks.
     "vmin_margin_mv": 50,
     "repair_yield_pct_min": 99,
     "ecc_required": false,
+    "fit_target_fit_per_mb": 100,
     "max_aspect_ratio": 4.0,
     "retention_required": true
   },
