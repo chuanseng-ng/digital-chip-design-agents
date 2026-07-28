@@ -1,7 +1,7 @@
 # digital-chip-design-agents
 
 > Claude Code marketplace plugin — full digital chip design pipeline.  
-> 15 plugins · 16 skill files · 13 chip-design domains + infrastructure + pipeline orchestrator · closed-loop verification↔RTL feedback.
+> 16 plugins · 17 skill files · 14 chip-design domains + infrastructure + pipeline orchestrator · closed-loop verification↔RTL feedback.
 
 [![Validate](https://github.com/chuanseng-ng/digital-chip-design-agents/actions/workflows/validate.yml/badge.svg)](https://github.com/chuanseng-ng/digital-chip-design-agents/actions/workflows/validate.yml)
 
@@ -45,6 +45,7 @@ For the install script, selective marketplace install, other AI assistants
 | `chip-design-hls` | High-Level Synthesis | Convert C/C++ to RTL, optimise directives, co-simulate |
 | `chip-design-pd` | Physical Design | Full PD flow: floorplan → placement → CTS → routing → sign-off |
 | `chip-design-soc` | SoC IP Integration | Qualify IPs, configure bus fabric, run chip-level sim |
+| `chip-design-memory-ip` | Memory IP Design | Select SRAM/RF/ROM macros, architect banking & ECC, allocate repair, qualify views |
 | `chip-design-compiler` | Compiler Toolchain | Build LLVM/GCC backend, assembler, linker, runtime for custom ISA |
 | `chip-design-firmware` | Embedded Firmware | BSP, HAL drivers, RTOS integration, firmware validation |
 | `chip-design-fpga` | FPGA Emulation | Port ASIC to FPGA, bring up hardware, validate SW on prototype |
@@ -68,7 +69,7 @@ Each plugin installs two things:
 Skills are loaded autonomously by Claude when you describe a task. Orchestrators are
 invoked explicitly when you want to run a complete flow end-to-end.
 
-Each orchestrator enforces a strict stage sequence with loop-back rules, and the 13 domains
+Each orchestrator enforces a strict stage sequence with loop-back rules, and the 14 domains
 connect into a complete spec→tape-out pipeline. See **[docs/PIPELINE.md](docs/PIPELINE.md)**
 for the flow diagram and loop-back details, and [docs/MASTER_INDEX.md](docs/MASTER_INDEX.md)
 for per-domain flow documentation.
@@ -95,7 +96,7 @@ for the full schema, distilling workflow, and QoR trend examples.
 
 ```
 digital-chip-design-agents/
-├── .claude-plugin/marketplace.json   ← Marketplace registry (all 15 plugins)
+├── .claude-plugin/marketplace.json   ← Marketplace registry (all 16 plugins)
 ├── plugins/                          ← One isolated directory per plugin (skill + orchestrator)
 ├── ides/                             ← IDE-specific config files (Copilot / Gemini / OpenCode / Codex)
 ├── memory/                           ← Persistent two-tier per-domain memory (see memory/README.md)

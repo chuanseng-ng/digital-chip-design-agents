@@ -205,6 +205,14 @@ their default fallbacks.
     "target_latency_cycles": null,
     "cosim_tolerance_pct": 5
   },
+  "memory_ip": {
+    "vmin_margin_mv": 50,
+    "repair_yield_pct_min": 99,
+    "ecc_required": false,
+    "fit_target_fit_per_mb": 100,
+    "max_aspect_ratio": 4.0,
+    "retention_required": true
+  },
   "fpga": {
     "lut_util_pct_max": 70,
     "bram_util_pct_max": 80,

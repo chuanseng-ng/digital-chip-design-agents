@@ -9,6 +9,7 @@
   "hls":           "**/hls/**,**/*.cpp,**/*.hpp,**/*_hls*",
   "pd":            "**/pd/**,**/floorplan/**,**/pr/**,**/apr/**",
   "soc":           "**/soc/**,**/ip/**,**/*integration*,**/*fabric*",
+  "memory-ip":     "**/sram/**,**/*sram*,**/rf/**,**/*regfile*,**/*register_file*,**/*register-file*,**/*_rf.*,**/rom/**,**/rom.*,**/*_rom*,**/*rom_*,**/*_mem*,**/memory-ip/**,**/memory_ip/**,plugins/memory-ip/**",
   "compiler":      "**/compiler/**,**/*.ll,**/*.td,**/llvm/**",
   "firmware":      "**/firmware/**,**/bsp/**,**/hal/**,**/rtos/**",
   "fpga":          "**/fpga/**,**/*.xdc,**/*.qsf,**/*.xpr,**/*.bit",

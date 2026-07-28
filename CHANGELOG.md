@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.4.0] — Memory IP Design domain
+
+### Added
+
+- **`chip-design-memory-ip` — 16th plugin, 14th design domain.** Embedded memory IP design (SRAM / register file / ROM): the pipeline previously treated memories as an externally supplied black box — PD placed them, synthesis `dont_touch`ed them, DFT tested them, SoC qualified their views, FPGA swapped them for BRAM — but nothing *produced* one. This domain fills that gap.
+  - **`plugins/memory-ip/skills/memory-ip-design/SKILL.md`** — seven stages: `memory_requirements → macro_selection → array_architecture → redundancy_repair → view_generation → integration_prep → memory_signoff`. Covers bandwidth and ECC sizing, column-mux/banking trade-offs, slow-corner access-time selection, write/read assist and Vmin, SECDED check-bit sizing and scrubbing, spare row/column allocation from defect density, soft vs. hard repair and efuse mapping, and view QA (pin consistency across `.lib`/`.lef`/`.v`, timing-arc completeness, corner coverage, LEF obstructions).
+  - **`plugins/memory-ip/agents/memory-ip-orchestrator.md`** — stage sequence, seven loop-back rules, sign-off criteria, and an explicit boundary rule: never insert MBIST or claim MBIST coverage (owned by `chip-design-dft`), never floorplan (`chip-design-pd`), never sign off timing (`chip-design-sta`), never assign the memory map (`chip-design-soc`).
+  - **`design_state.json` handoff** — new `memory_ip` block carrying `instances`, `views`, `repair` (scheme, spare counts, repair-register width, efuse map), `placement_constraints`, `ecc`, and `power_modes`. DFT consumes `instances` + `repair`; PD consumes `placement_constraints`; STA consumes `views.lib`; verification consumes `views.verilog`.
+  - **`constraints.memory_ip`** — `vmin_margin_mv` (50), `repair_yield_pct_min` (99), `ecc_required` (false), `max_aspect_ratio` (4.0), `retention_required` (true). `constraints.dft.mbist_coverage_pct` is read-only here.
+  - **`memory/memory-ip/knowledge.md`** seed and `docs/Memory_IP_Design_Flow.md`.
+  - `key_metrics`: `memory_instances`, `total_memory_area_um2`, `worst_access_time_ns`, `view_qa_errors`, `projected_repair_yield_pct`.
+
+### Changed
+
+- Counts bumped to **16 plugins / 17 skills / 16 agents / 14 design domains** across `marketplace.json`, `package.json` (→ `1.4.0`), `README.md`, `CLAUDE.md`, `docs/PIPELINE.md`, `docs/MASTER_INDEX.md`, `docs/INSTALL.md`, the Codex/Gemini/Copilot IDE headers, and `.github/workflows/release.yml`.
+- `validate.yml` count asserts 15 → 16 (agents/marketplace and `applyto-map.json`); `tests/test_distill.py` domain count 14 → 15.
+- `distill.py`, `tools/qor_trends.py`, `memory/README.md`, and `memory-keeper/SKILL.md` registered the new domain; `projected_repair_yield_pct` added to `HIGHER_IS_BETTER`.
+- Installers updated: `install.sh` and `install.ps1` (plugin list, dir map, `enabledPlugins`, OpenCode mode map, completion message) and `bin/install.mjs` (`OPENCODE_MODE_DISPLAY`).
+
 ## [Unreleased] — feat/semantic-experience-search branch
 
 ### Added

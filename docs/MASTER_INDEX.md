@@ -25,7 +25,7 @@
                ┌──────────────────────────┼──────────────────────────┐
                ▼                          ▼                          ▼
     ┌──────────────────┐      ┌───────────────────┐      ┌──────────────────────┐
-    │ 2. RTL DESIGN    │      │ 3. HLS FLOW        │      │ 7. FPGA EMULATION    │
+    │ 2. RTL DESIGN    │      │ 3. HLS FLOW        │      │ 14. FPGA EMULATION   │
     │ SV coding, lint, │      │ C/C++ → RTL        │      │ Early SW bring-up    │
     │ CDC, synth check │      │ (for algo blocks)  │      │ (runs in parallel)   │
     └────────┬─────────┘      └─────────┬──────────┘      └──────────────────────┘
@@ -40,6 +40,12 @@
     │ UVM, coverage,   │   │                        │   │                       │
     │ regression       │   │                        │   │                       │
     └──────────────────┘   └────────────────────────┘   └───────────────────────┘
+                                                        ┌───────────────────────┐
+                                                        │ 11. MEMORY IP DESIGN  │
+                                                        │ Macros, banking, ECC, │
+                                                        │ repair, view QA       │
+                                                        │ → DFT / PD / STA      │
+                                                        └───────────────────────┘
                                         │ Verified RTL
                      ┌──────────────────▼──────────────────────────────────┐
                      │  6. LOGIC SYNTHESIS                                  │
@@ -61,7 +67,7 @@
                ┌──────────────────────────┼──────────────────────────┐
                ▼                          ▼                          ▼
     ┌──────────────────┐      ┌───────────────────┐      ┌──────────────────┐
-    │ 11. COMPILER     │      │ 12. EMBEDDED       │      │  Silicon Bring-up│
+    │ 12. COMPILER     │      │ 13. EMBEDDED       │      │  Silicon Bring-up│
     │ TOOLCHAIN        │      │ FIRMWARE           │      │  (extends FPGA   │
     │ (for custom CPU) │      │ BSP, drivers, RTOS │      │  proto flow)     │
     └──────────────────┘      └───────────────────┘      └──────────────────┘
@@ -84,9 +90,10 @@
 | 8 | `PD_Flow_Architecture.md` | Full physical design flow | Netlist + SDC | GDS II |
 | 9 | `STA_Flow.md` | Multi-corner timing analysis, ECO | Routed DEF + SPEF | Timing closure report |
 | 10 | `SoC_IP_Integration_Flow.md` | IP procurement, SoC assembly | IP list + arch | Integrated SoC RTL |
-| 11 | `Compiler_Toolchain_Flow.md` | LLVM/GCC backend for custom ISA | ISA spec | Validated toolchain |
-| 12 | `Embedded_Firmware_Flow.md` | BSP, drivers, RTOS, validation | Chip datasheet | Validated firmware |
-| 13 | `FPGA_Emulation_Flow.md` | FPGA port, bring-up, SW validation | ASIC RTL | FPGA prototype + SW |
+| 11 | `Memory_IP_Design_Flow.md` | Memory macro selection, array arch, repair, view QA | Memory requirements + PDK | Qualified memory IP + views |
+| 12 | `Compiler_Toolchain_Flow.md` | LLVM/GCC backend for custom ISA | ISA spec | Validated toolchain |
+| 13 | `Embedded_Firmware_Flow.md` | BSP, drivers, RTOS, validation | Chip datasheet | Validated firmware |
+| 14 | `FPGA_Emulation_Flow.md` | FPGA port, bring-up, SW validation | ASIC RTL | FPGA prototype + SW |
 
 ---
 

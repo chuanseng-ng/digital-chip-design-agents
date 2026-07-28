@@ -1,9 +1,9 @@
 # Digital Chip Design — Copilot Workspace Instructions
 
-This workspace contains digital ASIC/FPGA chip design work spanning 13 domains:
+This workspace contains digital ASIC/FPGA chip design work spanning 14 domains:
 architecture evaluation, RTL design, functional verification, formal verification,
 logic synthesis, DFT, static timing analysis, HLS, physical design, SoC integration,
-compiler toolchain, embedded firmware, and FPGA emulation.
+memory IP design, compiler toolchain, embedded firmware, and FPGA emulation.
 
 ## Behaviour for All Domains
 
