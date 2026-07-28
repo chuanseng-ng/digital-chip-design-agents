@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.4.0] — Memory IP Design domain
+## [1.8.0] — Memory IP Design domain
 
 ### Added
 
@@ -14,7 +14,8 @@
 
 ### Changed
 
-- Counts bumped to **16 plugins / 17 skills / 16 agents / 14 design domains** across `marketplace.json`, `package.json` (→ `1.4.0`), `README.md`, `CLAUDE.md`, `docs/PIPELINE.md`, `docs/MASTER_INDEX.md`, `docs/INSTALL.md`, the Codex/Gemini/Copilot IDE headers, and `.github/workflows/release.yml`.
+- Counts bumped to **16 plugins / 17 skills / 16 agents / 14 design domains** across `marketplace.json`, `package.json`, `README.md`, `CLAUDE.md`, `docs/PIPELINE.md`, `docs/MASTER_INDEX.md`, `docs/INSTALL.md`, the Codex/Gemini/Copilot IDE headers, and `.github/workflows/release.yml`.
+- **Manifest version realigned to the release tag line.** `package.json` and `.claude-plugin/marketplace.json` had drifted to `1.3.0` while tags advanced to `v1.7.0`, and PR #71 bumped them to `1.4.0` — which matched neither the drift nor the tag line, and implied a `v1.4.0` tag after `v1.7.0`. Both now read `1.8.0`, the next tag for this MINOR change (new orchestrator domain, per `CONTRIBUTING.md`). The `npm-publish` job in `release.yml` stamps these fields from the tag at publish time, so the in-repo values are informational — but they should not contradict the tag they will be released under.
 - `validate.yml` count asserts 15 → 16 (agents/marketplace and `applyto-map.json`); `tests/test_distill.py` domain count 14 → 15.
 - `distill.py`, `tools/qor_trends.py`, `memory/README.md`, and `memory-keeper/SKILL.md` registered the new domain; `projected_repair_yield_pct` added to `HIGHER_IS_BETTER`.
 - Installers updated: `install.sh` and `install.ps1` (plugin list, dir map, `enabledPlugins`, OpenCode mode map, completion message) and `bin/install.mjs` (`OPENCODE_MODE_DISPLAY`).
